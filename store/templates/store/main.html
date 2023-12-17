@@ -10,6 +10,28 @@
 
 	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 
+	<script type = "text/javascript">
+		var user = '{{request.user}}'
+
+		function getToken(name){
+		var cookieValue = null;
+		if (document.cookie && document.cookie !== ''){
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = cookies[i].trim();
+				//Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+
+	}
+	var csrftoken = getToken('csrftoken');
+	</script>	
+
 </head>
 <body>
 	
@@ -23,7 +45,7 @@
 	    <ul class="navbar-nav mr-auto">
 	       {% comment %} <li class="nav-item active">
 	        <a class="nav-link" href="{% url 'store' %}">Store<span class="sr-only">(current)</span></a>
-	      </li> {% endcomment %}
+	      </li> 
 		
 		{% comment %} <div>
             <!--Insert logo here-->
@@ -33,9 +55,9 @@
 	{% comment %} <nav> {% endcomment %}
 		<ul>
         <div class="form-inline my-2 my-lg-0">
-			<li><a href="#"class="btn btn-warning">Login</a></li>
+			<li><a href="#"class="btn btn-warning"href="/login.html" class="href">Login</a></li>
          	<li><a href="{% url 'cart' %}"><img  id="cart-icon" src="{% static 'images/cart.png' %}"></a></li>
-            <li><p id="cart-total">0</p></li>
+            <li><p id="cart-total">{{cartItems}}</p></li>
 			</ul>
      	</div>
 	{% comment %} </nav> {% endcomment %}
@@ -72,7 +94,9 @@
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 
 	
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> 
+
+	<script type = "text/javascript" src = "{% static 'js/cart.js' %}"></script>
 
 	<!--Insert contact details here-->
 <section class="explore">
