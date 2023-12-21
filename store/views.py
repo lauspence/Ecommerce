@@ -1,12 +1,24 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import json
 from .models import Order
 import datetime
 from .models import *
 from . utils import cookieCart,cartData,guestOrder
+from django.contrib.auth import authenticate
+from django.contrib import messages
 
 # Create your views here.
+def loginview(request):
+     if request.method =='POST':
+          user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
+     if request.user.is_authenticated:
+          login(request, user)
+          messages.success(request, 'logged in successfully')
+          return redirect('store\main.html')
+     else:
+          messages.error(request,'Login failed')
+          return render(request, 'store\login.html')
 
 def store(request):
     data = cartData(request)
@@ -63,6 +75,7 @@ def updateItem(request):
           orderItem.delete()
      return JsonResponse('Item was added', safe=False)
 
+
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def processOrder(request):
@@ -91,9 +104,10 @@ def processOrder(request):
                city=data['shipping']['city'],     
                state=data['shipping']['state'],     
                zipcode=data['shipping']['zipcode'],     
-          )
-               
+          )  
      return JsonResponse('Payment complete!', safe=False)
+
+
 
       
 
