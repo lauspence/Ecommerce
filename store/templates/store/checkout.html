@@ -1,103 +1,109 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-     <div class="row">
-		<div class="col-lg-6">
-			<div class="box-element" id="form-wrapper">
-				<form id="form">
-					<div id="user-info">
-						<div class="form-field">
-							<input required class="form-control" type="text" name="name" placeholder="Name..">
-						</div>
-						<div class="form-field">
-							<input required class="form-control" type="email" name="email" placeholder="Email..">
-						</div>
+
+<div class="row">
+	<div class="col-lg-6">
+		<div class="box-element" id="form-wrapper">
+			<form id="form">
+				<div id="user-info">
+					<div class="form-field">
+						<input required class="form-control" type="text" name="name" placeholder="Name..">
 					</div>
-					
-					<div id="shipping-info">
-						<hr>
-						<p>Shipping Information:</p>
-						<hr>
-						<div class="form-field">
-							<input class="form-control" type="text" name="address" placeholder="Address..">
-						</div>
-						<div class="form-field">
-							<input class="form-control" type="text" name="city" placeholder="City..">
-						</div>
-						<div class="form-field">
-							<input class="form-control" type="text" name="state" placeholder="State..">
-						</div>
-						<div class="form-field">
-							<input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
-						</div>
-						<div class="form-field">
-							<input class="form-control" type="text" name="country" placeholder="Zip code..">
-						</div>
+					<div class="form-field">
+						<input required class="form-control" type="email" name="email" placeholder="Email..">
 					</div>
-
-					<hr>
-					<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
-				</form>
-			</div>
-
-			<br>
-			<div class="box-element hidden" id="payment-info">
-				<small>Paypal Options</small>
-				<button id = "make-payment">Make Payment</button>
-			</div>
-			
-		</div>
-
-		<div class="col-lg-6">
-			<div class="box-element">
-				<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
-				<hr>
-				<h3>Order Summary</h3>
-				<hr>
-				{% comment %} render {% endcomment %}
-				{% for item in items %} 
-				<div class="cart-row">
-					<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
-					<div style="flex:2"><p>{{item.product.name}}</p></div>
-					<div style="flex:1"><p>${{item.product.price}}</p></div>
-					<div style="flex:1"><p>x2{{item.quantity}}</p></div>
 				</div>
-				{% endfor %}
-				<h5>Items:  {{order.get_cart_items}}</h5>
-				<h5>Total:   ${{order.get_cart_total|floatformat:2}}</h5>
-			</div>
+					
+				<div id="shipping-info">
+					<hr>
+					<p>Shipping Information:</p>
+					<hr>
+					<div class="form-field">
+						<input class="form-control" type="text" name="address" placeholder="Address..">
+					</div>
+					<div class="form-field">
+						<input class="form-control" type="text" name="city" placeholder="City..">
+					</div>
+					<div class="form-field">
+						<input class="form-control" type="text" name="state" placeholder="State..">
+					</div>
+					<div class="form-field">
+						<input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
+					</div>
+					<div class="form-field">
+						<input class="form-control" type="text" name="country" placeholder="Zip code..">
+					</div>
+				</div>
+
+				<hr>
+				<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+			</form>
 		</div>
+		<br>
+
+		<div class="box-element hidden" id="payment-info">
+			<small>Paypal Options</small>
+			<button id ="make-payment">Make Payment</button>
+		</div>
+			
 	</div>
 
+	<div class="col-lg-6">
+		<div class="box-element">
+			<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+			<hr>
+			<h3>Order Summary</h3>
+			<hr>
+			{% comment %} render {% endcomment %}
+			{% for item in items %} 
+			<div class="cart-row">
+				<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
+				<div style="flex:2"><p>{{item.product.name}}</p></div>
+				<div style="flex:1"><p>${{item.product.price}}</p></div>
+				<div style="flex:1"><p>x2{{item.quantity}}</p></div>
+			</div>
+			{% endfor %}
+
+			<h5>Items: {{order.get_cart_items}}</h5>
+			<h5>Total: ${{order.get_cart_total|floatformat:2}}</h5>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript">
-	var shipping = '{{order.shipping}}'
-	var total = '{{order.get_cart_total}}'
+	var shipping == '{{order.shipping}}'
+	/*	username and email passed as float*/
+	{% comment %} var total =ParseFloat'{{order.get_cart_total}}' {% endcomment %}
 
 	if(shipping == 'False'){
 		document.getElementById('shipping-info').innerHTML = ''
 	}
 
-
-	if(user != 'AnonymousUser'){
+{% comment %} 
+	if(user !== 'AnonymousUser'){
 		document.getElementById('user-info').innerHTML = ''
-	}
+	} {% endcomment %}
 
 	
-	if (shipping == 'False' && user != 'AnonymousUser') {
+	{% comment %} if (shipping == 'False' && user !== 'AnonymousUser') { {% endcomment %}
 		//Hide entire form if user is logged in and shipping is False
-		document.getElementById('form-wrapper').classList.add("hidden");
+		{% comment %} document.getElementById('form-wrapper').classList.add("hidden"); {% endcomment %}
 		//show payment if logged in user wants to buy an item that does not require shipping
-		 document.getElementById('payment-info').classList.remove("hidden");
-	} 
+		 {% comment %} document.getElementById('payment-info').classList.remove("hidden");
+	}  {% endcomment %}
 
-	var form = document.getElementById('form')
+	{% comment %} var form = document.getElementsById('form')
+
+	csrftoken=form.getElementsByTagName("input")[0].value
+	console.log('Newtoken:',form.getElementByTagName("input")[0].value) 
 
 	form.addEventListener('submit', function(e){
 		e.preventDefault()
 		console.log('Form submitted...')
 		document.getElementById('form-button').classList.add('hidden')
 		document.getElementById('payment-info').classList.remove('hidden')
-	})
+		})
 	document.getElementById('make-payment').addEventListener('click', function(e){
 		submitFormData()
 	})
@@ -107,45 +113,50 @@
 
 		var userFormData = {
 			'name':null,
-			'email'null,
+			'email':null,
 			'total':total,
-		}
+		}	
 
-		var userFormData = {
+		var shippingInfo = {
 			'address':null,
 			'city':null,
 			'state':null,
 			'zipcode':null,
 		}
 
-		if(shipping!= 'False'){
+		if(shipping !== 'False'){
 			shippingInfo.address = form.address.value
 			shippingInfo.city = form.city.value
 			shippingInfo.state = form.state.value
 			shippingInfo.zipcode = form.zipcode.value
 
-		}if(user == 'AnonymousUser'){
+		}
+		 if(user !== 'AnonymousUser'){
 			userFormData.name = form.name.value
 			userFormData.email = form.email.value
 			
 		}
 
-		var url = '/process_order'
+		var url = '/process_order/'
 		fetch(url,{
 			method:'POST',
 			headers:{
 				'Content-Type':'application/json',
 				'X-CSRFToken':csrftoken,
 			},
-			body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo})
+			body: JSON.stringify({'form':userFormData, 'shipping':shippingInfo})
 		})
-		.then((response) => response.json())
+		.then((response)=> response.json())
 		.then((data) => {
 			console.log('success:',data);
 			alert('Transaction completed');
+
+			cart = {}
+			document.cookie='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+
 			window.location.href = "{% url 'store' %}"
-		})
-	}
+		}) {% endcomment %}
+	{% comment %} } {% endcomment %}
 </script>
 
 
