@@ -72,31 +72,28 @@
 </div>
 
 <script type="text/javascript">
-	var shipping == '{{order.shipping}}'
-	/*	username and email passed as float*/
-	{% comment %} var total =ParseFloat'{{order.get_cart_total}}' {% endcomment %}
+	var shipping='{{order.shipping}}'
+	/*	username and email can be passed as float*/
+	var total ='{{order.get_cart_total}}' 
 
 	if(shipping == 'False'){
 		document.getElementById('shipping-info').innerHTML = ''
 	}
-
-{% comment %} 
-	if(user !== 'AnonymousUser'){
+ 
+	if(user != 'AnonymousUser'){
 		document.getElementById('user-info').innerHTML = ''
-	} {% endcomment %}
+	} 
 
-	
-	{% comment %} if (shipping == 'False' && user !== 'AnonymousUser') { {% endcomment %}
+	if (shipping == 'False' && user != 'AnonymousUser') { 
 		//Hide entire form if user is logged in and shipping is False
-		{% comment %} document.getElementById('form-wrapper').classList.add("hidden"); {% endcomment %}
+		document.getElementById('form-wrapper').classList.add("hidden"); 
 		//show payment if logged in user wants to buy an item that does not require shipping
-		 {% comment %} document.getElementById('payment-info').classList.remove("hidden");
-	}  {% endcomment %}
+		document.getElementById('payment-info').classList.remove("hidden");
+	}  
 
-	{% comment %} var form = document.getElementsById('form')
 
-	csrftoken=form.getElementsByTagName("input")[0].value
-	console.log('Newtoken:',form.getElementByTagName("input")[0].value) 
+
+	var form = document.getElementById('form')
 
 	form.addEventListener('submit', function(e){
 		e.preventDefault()
@@ -104,9 +101,10 @@
 		document.getElementById('form-button').classList.add('hidden')
 		document.getElementById('payment-info').classList.remove('hidden')
 		})
+
 	document.getElementById('make-payment').addEventListener('click', function(e){
-		submitFormData()
-	})
+		submitFormData() 
+	}) 
 
 	function submitFormData(){
 		console.log('Payment button clicked')
@@ -115,7 +113,7 @@
 			'name':null,
 			'email':null,
 			'total':total,
-		}	
+		}
 
 		var shippingInfo = {
 			'address':null,
@@ -124,14 +122,14 @@
 			'zipcode':null,
 		}
 
-		if(shipping !== 'False'){
+		if(shipping != 'False'){
 			shippingInfo.address = form.address.value
 			shippingInfo.city = form.city.value
 			shippingInfo.state = form.state.value
 			shippingInfo.zipcode = form.zipcode.value
-
 		}
-		 if(user !== 'AnonymousUser'){
+
+		if(user == 'AnonymousUser'){
 			userFormData.name = form.name.value
 			userFormData.email = form.email.value
 			
@@ -150,14 +148,22 @@
 		.then((data) => {
 			console.log('success:',data);
 			alert('Transaction completed');
-
 			cart = {}
 			document.cookie='cart=' + JSON.stringify(cart) + ";domain=;path=/"
 
 			window.location.href = "{% url 'store' %}"
-		}) {% endcomment %}
-	{% comment %} } {% endcomment %}
-</script>
+		
+		})
 
+	}
+
+
+	{% comment %} csrftoken=form.getElementsByTagName("input")[0].value
+	console.log('Newtoken:',form.getElementByTagName("input")[0].value)  {% endcomment %}
+
+			
+		
+	 
+</script>
 
 {% endblock content %}
