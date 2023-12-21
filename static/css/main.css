@@ -119,6 +119,13 @@ h1,h2,h3,h4,h5,h6{
     -webkit-text-stroke: 2px #fff;
     color:transparent; 
 } 
+.floating-logo{
+    box-shadow: 2px 2px 5px black;
+    display: flex;
+    width:45px;
+    height:50px;
+}
+
 
 /* visit us to know more */
 /* .href {
@@ -166,6 +173,7 @@ h1,h2,h3,h4,h5,h6{
     margin: auto;
     text-align: center;
     padding-top: 100px;
+    position: relative;
 }
 h1 {
     font-size: 36px;
@@ -183,6 +191,17 @@ p {
     display: flex;
     justify-content: space-between;
 }
+
+.container{
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px skyblue;
+    border-radius: 10px;
+    transition: all 1.1s;
+}
+.container:hover{
+    transform: scale(1.2);
+}
+
 .explore-col{
     flex-basis: 31%;
     background:rgb(72, 193, 241);
