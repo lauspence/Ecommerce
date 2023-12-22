@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
+from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import json
 from .models import Order
@@ -9,16 +10,23 @@ from django.contrib.auth import authenticate
 from django.contrib import messages
 
 # Create your views here.
+
 def loginview(request):
-     if request.method =='POST':
-          user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
-     if request.user.is_authenticated:
+    if request.method == 'POST':
+     email = request.POST.get('email')
+     password = request.POST.get('password')
+
+     user = authenticate(request, email=email, password=password)
+
+     if user is not None:
           login(request, user)
-          messages.success(request, 'logged in successfully')
-          return redirect('store\main.html')
+          messages.success(request, 'Logged in successfully')
+          return redirect('store/main.html')  
      else:
-          messages.error(request,'Login failed')
-          return render(request, 'store\login.html')
+            messages.error(request, 'Login failed')
+            return render(request, 'store/login.html')
+
+    return render(request, 'store/login.html')
 
 def store(request):
     data = cartData(request)
@@ -106,6 +114,26 @@ def processOrder(request):
                zipcode=data['shipping']['zipcode'],     
           )  
      return JsonResponse('Payment complete!', safe=False)
+
+def update_cart(request, product_id):
+    # Retrieve the selected size from the request
+    new_size = request.POST.get('size', None)
+
+    # Ensure the new_size is valid (add appropriate validation)
+    valid_sizes = ['S', 'M', 'L', 'XL']
+    if new_size not in valid_sizes:
+        return JsonResponse({'error': 'Invalid size .Choose from: S, M, L, XL'}, status=400)
+
+    # Retrieve the product from the database
+    product = get_object_or_404(Product, id=product_id)
+
+    # Update the product size
+    product.size = new_size
+    product.save()
+
+    # Return a success response
+    return JsonResponse({'success': True})
+
 
 
 

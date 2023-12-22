@@ -95,18 +95,22 @@
 	   </div>
 	  </div>
 	</nav>
+	
 
-	<video autoplay muted loop id="bgvideo" >
+	<video autoplay muted loop id="bgvideo" class = "container1" >
 		<source src="images/Video.mp4" type="Video/mp4">
 		</video>
 		 <style>
 			#bgvideo {
-			position:fixed;
-			margin-top: 0;
-			width:1350px; 
-			height:5%%;
+			position:relative; 
+			margin-top: 20px;
+			left:0;
+			
+			object-fit: cover;
+			width:1260px; 
+			height:250px;
 			}
-		 </style>
+		 </style> 
 	
     <div class="container">
             {% block content %}
