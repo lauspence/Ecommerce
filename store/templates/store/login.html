@@ -76,13 +76,14 @@
     {% csrf_token %}
     
     <div class="form-group">
-    <label for="">Email: </label>
-    <input type="text" name="Email" id="">
-    </div>
+      <label><b>Email ID</b></label>
+      <input type="email" name= "userName" placeholder= " Enter Email">
+  
+      
 
     <div class="form-group">
-    <label for="">Password: </label>
-    <input type="Password" name="Password" id="">
+      <label><b>Password</b></label>
+      <input type="Password" name= "pwd" placeholder= " Enter Password">
     </div>
 
     <div class="form-group">
@@ -90,6 +91,19 @@
     </div>
 
   </form>
+
+  {% if error == "yes" %}
+<script>
+    alert("Login Successfull");
+    window.location = ('{% url 'store' %}')
+</script>
+{% endif %}
+
+{% if error == "no" %}
+<script>
+    alert("Invalid Login Credentials,Try Again..."); 
+</script>
+{% endif %}
 
 </body>
 </html>

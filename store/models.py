@@ -7,6 +7,15 @@ from django.contrib.auth.models import User
 
 #     def __str__(self):
 #         return self.name
+
+class loginview(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    mobile = models.CharField(max_length=15,null=True)
+    image = models.FileField(null=True)
+    gender=  models.CharField(max_length=10,null=True)
+    type =  models.CharField(max_length=15,null=True)
+    def _str_(self):
+        return self.user.username
     
 class Customer(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE, null=True, blank=True)

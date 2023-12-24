@@ -12,21 +12,43 @@ from django.contrib import messages
 # Create your views here.
 
 def loginview(request):
-    if request.method == 'POST':
-     email = request.POST.get('email')
-     password = request.POST.get('password')
+    error=""
+    if request.method == "POST":
+        u = request.POST['userName']
+        p = request.POST['pwd']
+        user = authenticate(userName=u, password=p)
+        if user:
+            try:
+                user1=Customer.objects.get(user=user)
+                if user1.type == "Customer":
+                    login(request,user)
+                    error="no"
+                else:
+                    error="yes"
+            except:
+                error="yes"
+        else:
+            error="yes" 
+            
+    d={'error':error}        
+    return render(request,'store/login.html',d)
 
-     user = authenticate(request, email=email, password=password)
+# def loginview(request):
+#     if request.method == 'POST':
+#      email = request.POST.get('email')
+#      password = request.POST.get('password')
 
-     if user is not None:
-          login(request, user)
-          messages.success(request, 'Logged in successfully')
-          return redirect('store/main.html')  
-     else:
-            messages.error(request, 'Login failed')
-            return render(request, 'store/login.html')
+#      user = authenticate(request, email=email, password=password)
 
-    return render(request, 'store/login.html')
+#      if user is not None:
+#           login(request, user)
+#           messages.success(request, 'Logged in successfully')
+#           return redirect('store/main.html')  
+#      else:
+#             messages.error(request, 'Login failed')
+#             return render(request, 'store/login.html')
+
+#     return render(request, 'store/login.html')
 
 def store(request):
     data = cartData(request)
