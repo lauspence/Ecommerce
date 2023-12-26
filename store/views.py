@@ -33,29 +33,14 @@ def loginview(request):
     d={'error':error}        
     return render(request,'store/login.html',d)
 
-# def loginview(request):
-#     if request.method == 'POST':
-#      email = request.POST.get('email')
-#      password = request.POST.get('password')
-
-#      user = authenticate(request, email=email, password=password)
-
-#      if user is not None:
-#           login(request, user)
-#           messages.success(request, 'Logged in successfully')
-#           return redirect('store/main.html')  
-#      else:
-#             messages.error(request, 'Login failed')
-#             return render(request, 'store/login.html')
-
-#     return render(request, 'store/login.html')
 
 def store(request):
     data = cartData(request)
     cartItems = data['cartItems']
+    show_discount_alert = True
                
     products =  Product.objects.all()
-    context = {'products': products, 'cartItems':cartItems}
+    context = {'products': products, 'cartItems':cartItems, 'show_discount_alert': show_discount_alert}
     return render(request, 'store/store.html', context)
    
 
@@ -156,9 +141,6 @@ def update_cart(request, product_id):
     # Return a success response
     return JsonResponse({'success': True})
 
-
-
-
-      
-
-
+def AboutUs(request):
+          return render(request, 'store/AboutUs.html') 
+     
