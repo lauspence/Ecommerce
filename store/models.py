@@ -2,11 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
 
-# class Size(models.Model):
-#     name = models.CharField(max_length=20, unique=True)
+class Size(models.Model):
+    name = models.CharField(max_length=20, unique=True)
 
-#     def __str__(self):
-#         return self.name
+    def __str__(self):
+        return self.name
 
 class loginview(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
@@ -27,14 +27,23 @@ class Customer(models.Model):
     
     
 class Product(models.Model):
-    # size = models.Cha(Size, on_delete=models.CASCADE)
+    SIZE_CHOICES = [
+        ('S', 'Small'),
+        ('M', 'Medium'),
+        ('L', 'Large'),
+        ('XL', 'Xtra-Large'),
+        ('XXL', 'XXL'),
+    ]
+
     name = models.CharField(max_length=200, null=True)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     digital = models.BooleanField(default=False, null=True, blank=False)
-    image = models.ImageField(null=True, blank=True)    
+    image = models.ImageField(null=True, blank=True)
+    size = models.CharField(max_length=3, choices=SIZE_CHOICES,null=True, blank=True)
+
     def __str__(self):
         return self.name
-    
+
     @property
     def imageURL(self):
         try:
@@ -42,6 +51,7 @@ class Product(models.Model):
         except:
             url = ''
         return url
+
  
 #order object ,customer can have many orders    
 class Order(models.Model):  

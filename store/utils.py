@@ -11,6 +11,9 @@ def cookieCart(request):
     items = []
     order = {'get_cart_total':0, 'get_cart_items':0 ,'shipping':False}
     cartItems = order['get_cart_items']
+    
+    # Retrieve the 'size' parameter outside the loop
+    size = request.GET.get('size')
                 
     for i in cart:
         try:
@@ -26,18 +29,28 @@ def cookieCart(request):
                 'product':{
                     'id': product.id,
                     'name':product.name,
+                    'size':product.size,
                     'price':product.price,
                     'imageURL':product.imageURL,
                     },
                 'quantity':cart[i]["quantity"],
                 'get_total':total
                 }
+            # Include 'size' in the item if it's available
+            if size:
+                item['product']['size'] = size
+                
             items.append(item)
                     
             if product.digital == False:
                 order['shipping'] = True
+                
+            if request.GET.get('size'):
+                size = request.GET.get('size')
         except:
             pass
+    print(cartItems, 'cart items')
+
     return {'cartItems':cartItems,'order':order, 'items':items}
 
 def cartData(request):

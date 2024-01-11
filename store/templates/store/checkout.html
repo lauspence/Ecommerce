@@ -59,14 +59,18 @@
 			{% for item in items %} 
 			<div class="cart-row">
 				<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
+				<div style="flex:1"><p>size {{item.product.size}}</p></div>
 				<div style="flex:2"><p>{{item.product.name}}</p></div>
 				<div style="flex:1"><p>${{item.product.price}}</p></div>
-				<div style="flex:1"><p>x2{{item.quantity}}</p></div>
+				<div style="flex:1"><p>quantity {{item.quantity}}</p></div>
 			</div>
 			{% endfor %}
 
 			<h5>Items: {{order.get_cart_items}}</h5>
 			<h5>Total: ${{order.get_cart_total|floatformat:2}}</h5>
+			{% if item.product.size %}
+                <p>Selected Size: {{ size }}</p>
+            {% endif %}
 		</div>
 	</div>
 </div>
@@ -75,6 +79,7 @@
 	var shipping='{{order.shipping}}'
 	/*	username and email can be passed as float*/
 	var total ='{{order.get_cart_total}}' 
+	var selectedSize = 'Small';
 
 	if(shipping == 'False'){
 		document.getElementById('shipping-info').innerHTML = ''
@@ -101,6 +106,11 @@
 		document.getElementById('form-button').classList.add('hidden')
 		document.getElementById('payment-info').classList.remove('hidden')
 		})
+	document.querySelectorAll('.size-select').forEach(function(select) {
+		select.addEventListener('change', function() {
+			selectedSize = this.value;
+		})	
+	})
 
 	document.getElementById('make-payment').addEventListener('click', function(e){
 		submitFormData() 
@@ -142,7 +152,7 @@
 				'Content-Type':'application/json',
 				'X-CSRFToken':csrftoken,
 			},
-			body: JSON.stringify({'form':userFormData, 'shipping':shippingInfo})
+			body: JSON.stringify({'form':userFormData, 'shipping':shippingInfo, 'selected_Size':selectedSize })
 		})
 		.then((response)=> response.json())
 		.then((data) => {

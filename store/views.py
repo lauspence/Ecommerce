@@ -40,6 +40,8 @@ def store(request):
     show_discount_alert = True
                
     products =  Product.objects.all()
+    print(cartItems, 'cart items------------')
+
     context = {'products': products, 'cartItems':cartItems, 'show_discount_alert': show_discount_alert}
     return render(request, 'store/store.html', context)
    
@@ -51,6 +53,8 @@ def cart(request):
      items = data['items']
                        
      context = {'items': items, 'order':order, 'cartItems':cartItems}
+     
+    #  print(cartItems, 'cart items------------q')
      return render(request, 'store/cart.html', context)
 
 
@@ -59,8 +63,9 @@ def checkout(request):
     cartItems = data['cartItems']
     order = data['order']             
     items = data['items']
+    size = request.GET.get('size')
                   
-    context = {'items': items, 'order': order,'cartItems':cartItems}
+    context = {'items': items, 'order': order,'cartItems':cartItems,'size': size}
     return render(request, 'store/checkout.html', context)
 
 
