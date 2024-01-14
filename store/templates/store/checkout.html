@@ -1,7 +1,44 @@
+<!DOCTYPE html>
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
+<html>
+	<!--Rendering HelcimPayIframe-->
+<head>
+	<!--Helcim Payment API-->
+	<script type="text/javascript" src="https://secure.helcim.app/helcim-pay/services/start.js"></script>
 
+	<!--Shippo API-->
+	<script>
+	curl --location 'https://api.goshippo.com/parcels/' \
+	--header 'Authorization: ShippoToken shippo_live_3abb9901a8c0de8492189a3fb601134178170626' \
+	--header 'Content-Type: application/json' \
+	--data '{
+	"length": 5,
+	"width": 5,
+	"height": 5,
+	"distance_unit": "cm",
+	"weight": 2,
+	"mass_unit": "lb",
+	"template": "",
+	"metadata": "Wool Box1"
+	}'
+
+	curl https://api.goshippo.com/transactions/ \
+	-H "Authorization: ShippoToken shippo_live_3abb9901a8c0de8492189a3fb601134178170626"
+
+	curl https://api.goshippo.com/transactions/70ae8117ee1749e393f249d5b77c45e0 \
+	-H "Authorization: ShippoToken shippo_live_3abb9901a8c0de8492189a3fb601134178170626"
+
+	curl https://api.goshippo.com/tracks/usps/9205590164917312751089 \
+	-H "Authorization: ShippoToken shippo_live_3abb9901a8c0de8492189a3fb601134178170626"
+
+	curl  https://api.goshippo.com/customs/items/ \
+	-H "Authorization: ShippoToken sshippo_live_3abb9901a8c0de8492189a3fb601134178170626"
+</script>
+</head>
+
+<body>
 <div class="row">
 	<div class="col-lg-6">
 		<div class="box-element" id="form-wrapper">
@@ -14,7 +51,10 @@
 						<input required class="form-control" type="email" name="email" placeholder="Email..">
 					</div>
 				</div>
-					
+
+				
+				
+				
 				<div id="shipping-info">
 					<hr>
 					<p>Shipping Information:</p>
@@ -42,12 +82,55 @@
 		</div>
 		<br>
 
-		<div class="box-element hidden" id="payment-info">
-			<small>Paypal Options</small>
-			<button id ="make-payment">Make Payment</button>
-		</div>
+<div class="box-element hidden" id="payment-info">
+
+<!--Initialization helcim payload-->
+<script>
+	const payload = {
+		method: 'POST',
+		headers: {
+		  accept: 'application/json',
+		  'api-token': K2K39trxSR9gkcHRtZM9SG5sk,
+		  'content-type': 'application/json'
+		},
+		body: JSON.stringify({paymentType: 'purchase', amount: 100, currency: 'CAD'})
+	  }
+	  
+	  axios.post('https://api.helcim.com/v2/helcim-pay/initialize', payload)
+		.then(response => console.log(response))
+		.catch(err => console.error(err));	
+</script>
+
+<!--Implementating HelcimPayIframe-->
+<a href="javascript: appendHelcimPayIframe(checkoutToken, false)">
+	Pay Now
+ </a>
+
+<!--Process Payment button-->
+<script>
+window.addEventListener('message', (event) => {
+  
+	const helcimPayJsIdentifierKey = 'helcim-pay-js-' + checkoutToken;
+	
+	if(event.data.eventName === helcimPayJsIdentifierKey){
+	  
+	  if(event.data.eventStatus === 'ABORTED'){
+		 console.error('Transaction failed!', event.data.eventMessage);
+	  }
+	  
+	  if(event.data.eventStatus === 'SUCCESS'){
+		console.log('Transaction success!', event.data.eventMessage);
+	  }
+	  
+	}
+	
+  }); 
+</script>
+
+			{% comment %} <button id ="make-payment">Make Payment</button> {% endcomment %}
+</div>
 			
-	</div>
+</div>
 
 	<div class="col-lg-6">
 		<div class="box-element">
@@ -75,6 +158,39 @@
 	</div>
 </div>
 
+{% comment %} <!--SCRIPT-->
+<script type="text/javascript" src="https://secure.myhelcim.com/js/version2.js"> </script>
+
+<!--FORM-->
+<form name="helcimForm" id="helcimForm" action="checkout.html" method="POST">
+
+	<!--RESULTS-->
+	<div id="helcimResults"></div>
+
+	<!--SETTINGS-->
+	<input type="hidden" id="token" value="58ae1d44d7ac6959332969">
+	<input type="hidden" id="language" value="en">
+
+	<!--CARD-INFORMATION-->
+	Card Token: <input type="text" id="cardToken" value="1"><br/>
+	Credit Card Number: <input type="text" id="cardNumber" value=""><br/>
+	Expiry Month: <input type="text" id="cardExpiryMonth" value=""> 
+  	Expiry Year: <input type="text" id="cardExpiryYear" value=""><br/>
+	CVV: <input type="text" id="cardCVV" value=""><br/>
+
+	<!--AVS- INFORMATION-->
+	Card Holder Name: <input type="text" id="cardHolderName" value=""><br/>
+	Card Holder Address: <input type="text" id="cardHolderAddress" value=""><br/>
+	Card Holder Postal Code: <input type="text" id="cardHolderPostalCode" value=""><br/>
+
+	<!--OPTIONAL-AMOUNT-->
+	Amount: <input type="text" id="amount" value="100.00"><br/>
+
+	<!--BUTTON-->
+	<input type="button" id="buttonProcess" value="Process" onclick="javascript:helcimProcess();">
+
+</form>  {% endcomment %}
+
 <script type="text/javascript">
 	var shipping='{{order.shipping}}'
 	/*	username and email can be passed as float*/
@@ -96,8 +212,6 @@
 		document.getElementById('payment-info').classList.remove("hidden");
 	}  
 
-
-
 	var form = document.getElementById('form')
 
 	form.addEventListener('submit', function(e){
@@ -112,9 +226,9 @@
 		})	
 	})
 
-	document.getElementById('make-payment').addEventListener('click', function(e){
+	{% comment %} document.getElementById('make-payment').addEventListener('click', function(e){
 		submitFormData() 
-	}) 
+	})  {% endcomment %}
 
 	function submitFormData(){
 		console.log('Payment button clicked')
@@ -170,10 +284,12 @@
 
 	{% comment %} csrftoken=form.getElementsByTagName("input")[0].value
 	console.log('Newtoken:',form.getElementByTagName("input")[0].value)  {% endcomment %}
-
-			
-		
+	
 	 
 </script>
+
+</body>
+
+</html>
 
 {% endblock content %}
