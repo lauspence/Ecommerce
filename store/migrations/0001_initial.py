@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('digital', models.BooleanField(default=False, null=True)),
                 ('image', models.ImageField(blank=True, null=True, upload_to='')),
                 ('size', models.CharField(max_length=200, null=True)),
-                ('size2', models.CharField(max_length=200, null=True)),
+
             ],
         ),
         migrations.CreateModel(

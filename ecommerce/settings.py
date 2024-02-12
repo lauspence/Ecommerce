@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store.apps.StoreConfig',
-    
+    'shippo',
+    # 'helcim',
     
 ]
 
@@ -51,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ecommerce.middleware.CSPMiddleware'
 ]
 
 ROOT_URLCONF = 'ecommerce.urls'
@@ -102,7 +105,22 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+# Helcim Settings
+# HELCIM_API_URL = 'https://secure.myhelcim.com/api/'
+# HELCIM_ACCOUNT_ID = 'your_helcim_account_id'
+# HELCIM_API_TOKEN = 'K2K39trxSR9gkcHRtZM9SG5sk'
+# HELCIM_TERMINAL_ID = 'your_helcim_terminal_id'
 
+# DJANGO_HELCIM_CONFIG = {
+#     'purchase': {
+#         'url': 'https://myhelcim.com/js/version2.js',
+#         'token': 'K2K39trxSR9gkcHRtZM9SG5sk',
+#     },
+#     'preauthorization': {
+#         'url':  'https://myhelcim.com/js/version2.js',
+#         'token': 'K2K39trxSR9gkcHRtZM9SG5sk',
+#     }
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

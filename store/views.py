@@ -1,15 +1,72 @@
-from django.shortcuts import render, redirect,get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import json
-from .models import Order
 import datetime
-from .models import *
-from . utils import cookieCart,cartData,guestOrder
-from django.contrib.auth import authenticate
-from django.contrib import messages
+import requests
 
-# Create your views here.
+from .models import Order, OrderItem, Product, Customer, ShippingAddress
+from .utils import cookieCart, cartData, guestOrder
+from django.http import JsonResponse
+import shippo
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.edit import FormView
+
+
+shippo.config.api_key = "shippo_test_6b8b4da6247bd3e14c92a515b1608c982d78a52f"
+#Shippo-API
+def calculate_shipping(request):
+    # Get address and parcel details from the request or use dummy data
+    address_from = {
+        "name": "Shawn Ippotle",
+        "company": "Shippo",
+        "street1": "215 Clayton St.",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94117",
+        "country": "US",
+        "phone": "+1 555 341 9393",
+        "email": "shippotle@shippo.com",
+    }
+
+    address_to = {
+        "name": "Mr Hippo",
+        "company": "Shippo",
+        "street1": "Broadway 1",
+        "city": "New York",
+        "state": "NY",
+        "zip": "10007",
+        "country": "US",
+        "phone": "+1 555 341 9393",
+        "email": "mrhippo@shippo.com",
+    }
+
+    parcel = {
+        "length": "5",
+        "width": "5",
+        "height": "5",
+        "distance_unit": "in",
+        "weight": "2",
+        "mass_unit": "lb",
+    }
+
+    # Create a shipment
+    shipment = shippo.Shipment.create(
+        address_from=address_from,
+        address_to=address_to,
+        parcels=[parcel],
+        async_shipment=False,
+    )
+
+    # Retrieve the first rate for simplicity (you may want to loop through rates)
+    rate = shipment.rates[0]
+
+    # Now you can use rate object to get label_url, tracking_number, etc.
+    label_url = rate.label_url
+    tracking_number = shipment.tracking_number
+
+    return JsonResponse({"label_url": label_url, "tracking_number": tracking_number})
+
 
 def loginview(request):
     error=""
@@ -37,25 +94,36 @@ def loginview(request):
 def store(request):
     data = cartData(request)
     cartItems = data['cartItems']
-    show_discount_alert = True
-               
+    
     products =  Product.objects.all()
-    print(cartItems, 'cart items------------')
-
-    context = {'products': products, 'cartItems':cartItems, 'show_discount_alert': show_discount_alert}
+    context = {'products': products, 'cartItems':cartItems}
     return render(request, 'store/store.html', context)
    
 
 def cart(request):
-     data = cartData(request)
-     cartItems = data['cartItems']
-     order = data['order']             
-     items = data['items']
-                       
-     context = {'items': items, 'order':order, 'cartItems':cartItems}
-     
-    #  print(cartItems, 'cart items------------q')
-     return render(request, 'store/cart.html', context)
+    
+    data = cartData(request)
+    cartItems = data['cartItems']
+    order = data['order']             
+    items = data['items']
+    
+    context = {'items': items, 'order': order,'cartItems':cartItems}
+    # Use HttpResponse instead of HTTPResponse
+    return render(request, 'store/cart.html', context)
+
+    # if request.user.is_authenticated:
+    #     customer = request.user.customer
+    #     order, created= Order.objects.get_or_create(customer=customer, complete=False)
+    #     items = order.orderitem_set.all()
+    #     cartItems = order.get_cart_items
+    # else:
+    #     cookieData = cookieCart(request)
+    #     cartItems = cookieData['cartItems']
+    #     order = cookieData['order']
+    #     items = cookieData['items']
+    # context = {'items': items, 'order':order, 'cartItems':cartItems}
+    # return render(request, 'store/cart.html', context)
+
 
 
 def checkout(request):
@@ -63,10 +131,12 @@ def checkout(request):
     cartItems = data['cartItems']
     order = data['order']             
     items = data['items']
-    size = request.GET.get('size')
-                  
-    context = {'items': items, 'order': order,'cartItems':cartItems,'size': size}
+    
+    context = {'items': items, 'order': order,'cartItems':cartItems}
+    # Use HttpResponse instead of HTTPResponse
     return render(request, 'store/checkout.html', context)
+
+
 
 
 def updateItem(request):
@@ -74,7 +144,6 @@ def updateItem(request):
      productId = data['productId']
      action = data['action']
      
-
      print('Action:', action)
      print('productId:', productId)
      
@@ -95,8 +164,27 @@ def updateItem(request):
           orderItem.delete()
      return JsonResponse('Item was added', safe=False)
 
+#UPDATE SIZE
+def updateSize(request):
+    if request.method == 'POST':
+        data = request.POST
+        product_id = data.get('productId')
+        selected_size = data.get('selectedSize')
 
-from django.views.decorators.csrf import csrf_exempt
+        # Retrieve the product from the database
+        product = get_object_or_404(Product, id=product_id)
+
+        # Update the product size
+        product.size = selected_size
+        product.save()
+
+        # Return a success response
+        return JsonResponse({'success': True})
+    else:
+        # Return an error response for unsupported HTTP methods
+        return JsonResponse({'error': 'Unsupported method'}, status=405)
+
+
 @csrf_exempt
 def processOrder(request):
      transaction_id = datetime.datetime.now().timestamp()
@@ -129,7 +217,7 @@ def processOrder(request):
 
 def update_cart(request, product_id):
     # Retrieve the selected size from the request
-    new_size = request.POST.get('size', None)
+    new_size = request.GET.get('size', None)
 
     # Ensure the new_size is valid (add appropriate validation)
     valid_sizes = ['S', 'M', 'L', 'XL']
@@ -146,6 +234,10 @@ def update_cart(request, product_id):
     # Return a success response
     return JsonResponse({'success': True})
 
+
 def AboutUs(request):
           return render(request, 'store/AboutUs.html') 
      
+
+
+  

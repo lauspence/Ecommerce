@@ -1,109 +1,74 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-	<div class="row">
-		<div class="col-lg-12">
-			<div class="box-element">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box-element">
+                <a class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+                <br>
+                <br>
+                <table class="table">
+                    <tr>
+                        <th><h5>Items: <strong>{{ order.get_cart_items }}</strong></h5></th>
+                        <th><h5>Total: <strong>${{ order.get_cart_total|floatformat:2 }}</strong></h5></th>
+                        <th>
+                            <a style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
+                        </th>
+                    </tr>
+                </table>
+            </div>
 
-				<a  class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+            <br>
+            <form method="post" action="{% url 'cart' %}">
+                <div class="box-element">
+                    <div class="cart-row">
+                        <div style="flex:2"><strong>Product</strong></div>
+                        <div style="flex:2"><strong>Size</strong></div>
+                        <div style="flex:2"><strong>Item</strong></div>
+                        <div style="flex:1"><strong>Price</strong></div>
+                        <div style="flex:1"><strong>Quantity</strong></div>
+                        <div style="flex:1"><strong>Total</strong></div>
+                    </div>
 
-				<br>
-				<br>
-				<table class="table">
-					<tr>
-						<th><h5>Items: <strong>{{order.get_cart_items}}</strong></h5></th>
-						<th><h5>Total: <strong>${{order.get_cart_total|floatformat:2}}</strong></h5></th>
-						<th>
-							<a  style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
-						</th>
-					</tr>
-				</table> 
+                    {% for item in items %}
+                        <div class="cart-row">
+                            <div style="flex:2"><img class="row-image" src="{{ item.product.imageURL }}"></div>
+                            <div style="flex:2">
+                                <select class="size-select " data-product="{{ item.product.id }}" id="size-{{ item.product.id }}">
+                                    <option value="0" {% if item.size == '0' %} selected="selected" {% endif %}>Select Size:</option>
+                                    <option value="1" {% if item.size == '1' %} selected="selected" {% endif %}>Small</option>
+                                    <option value="2" {% if item.size == '2' %} selected="selected" {% endif %}>Medium</option>
+                                    <option value="3" {% if item.size == '3' %} selected="selected" {% endif %}>Large</option>
+                                    <option value="4" {% if item.size == '4' %} selected="selected" {% endif %}>Xtra-Large</option>
+                                    <option value="5" {% if item.size == '5' %} selected="selected" {% endif %}>XL</option>
+                                    <option value="6" {% if item.size == '6' %} selected="selected" {% endif %}>XXL</option>
+                                           
+                                </select>
+                                <p>{{item.product.size}}</p>
+                            </div>
+                            <div style="flex:2">{{ item.product.name }}</div>
+                            <div style="flex:1">${{ item.product.price|floatformat:2 }}</div>
+                            <div style="flex:1">
+                                <p class="quantity">{{ item.quantity }}</p>
+                                <div class="quantity">
+                                    <img data-product="{{ item.product.id }}" data-action="add" class="chg-quantity update-cart"
+                                         src="{% static 'images/arrow-up.png' %}">
+                                    <img data-product="{{ item.product.id }}" data-action="remove" class="chg-quantity update-cart"
+                                         src="{% static 'images/arrow-down.png' %}">
+                                </div>
+                            </div>
+                            <div style="flex:1">${{ item.get_total }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+    </div>
 
-			</div>
+    <!-- Your existing script for size selects -->
 
-			<br>
-			<div class="box-element">
-				<div class="cart-row">
-					<div style="flex:2"><strong>Product</strong></div>
-					<div style="flex:2"><strong>Size</strong></div>
-					<div style="flex:2"><strong>Item</strong></div>
-					<div style="flex:1"><strong>Price</strong></div>
-					<div style="flex:1"><strong>Quantity</strong></div>
-					<div style="flex:1"><strong>Total</strong></div>
-				</div>
+    <!-- Your Django template code -->
 
-				
-				{% for item in items %}
-				<div class="cart-row">
-					<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
-					<div style="flex:2">
-						{% comment %} <div class="custom-select" {{item.product.size}} style="width:200px;"> {% endcomment %}
-							<select class="size-select" onchange="get_correct_price('{{item.product.id}}', this)">
-							  <option value="0">Select Size:</option>
-							  <option value="1">Small</option>
-							  <option value="2">Medium</option>
-							  <option value="3">Large</option>	
-							  <option value="4">Xtra-Large</option>
-							  <option value="5">XL</option>
-							  <option value="6">XXL</option>
-							</select>
-						{% comment %} </div> {% endcomment %}
-					</div>
-					<div style="flex:2">{{item.product.name}}</div>
-					<div style="flex:1">{{item.product.price|floatformat:2}}</div>
-					<div style="flex:1">
-						<p class="quantity">{{item.quantity}}</p>
-						<div class="quantity">
-							<img data-product={{item.product.id}} data-action="add"class="chg-quantity update-cart" src="{% static 'images/arrow-up.png' %}">
-					
-							<img data-product={{item.product.id}} data-action="remove" class="chg-quantity update-cart" src="{% static 'images/arrow-down.png' %}">
-						</div>
-					</div>
-					<div style="flex:1">${{item.get_total}}</div>
-				</div>
-				{% endfor %}
-			</div>
-			
-		</div>
-</div>
 
-<script>
-	function get_correct_price(productId, select) {
-		// Add your logic here to determine the correct price based on the selected size
-		var newSize = select.value;
 
-		// Example: Output the selected product ID and size
-		console.log('Selected Product ID: ' + productId);
-		console.log('Selected Size: ' + newSize);
-		// Redirect with the selected size and product ID
-		window.location.href = window.location.pathname + '?size=' + newSize + '&productId=' + productId;
-	}
-
-    document.addEventListener('DOMContentLoaded', function() {
-		var sizeSelects = document.querySelectorAll('.size-select');
-	
-		sizeSelects.forEach(function(select) {
-			select.addEventListener('change', function() {
-				// Add logic to send the selected size to the server using AJAX
-				var productId = select.getAttribute('data-product');
-				var newSize = select.value;
-	
-				// Example AJAX request using Fetch API
-				fetch('/update_cart/' + productId + '/', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-						'X-CSRFToken': '{{ csrf_token }}'
-					},
-					body: JSON.stringify({
-						size: newSize
-					})
-				})
-				.then(response => response.json())
-				.then(data => console.log(data))
-				.catch(error => console.error('Error:', error));
-			});
-		});
-	});
-</script>
-{% endblock content %}
+{% endblock %}

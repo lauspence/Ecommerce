@@ -33,6 +33,7 @@ class Product(models.Model):
         ('L', 'Large'),
         ('XL', 'Xtra-Large'),
         ('XXL', 'XXL'),
+        ('Xs','Xtra-small')
     ]
 
     name = models.CharField(max_length=200, null=True)
@@ -52,7 +53,8 @@ class Product(models.Model):
             url = ''
         return url
 
- 
+    def get_size_choices(self):
+        return self.SIZE_CHOICES
 #order object ,customer can have many orders    
 class Order(models.Model):  
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
@@ -91,6 +93,8 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
+    
+    
     
     @property
     def get_total(self):
