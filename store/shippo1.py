@@ -3,12 +3,12 @@ import json
 import shippo
 
 # Set your Shippo API key
-shippo.config.api_key = ""
+shippo.config.api_key = "shippo_test_625ae65fb7e9910e6ca5c1f82a75acfaae2a0dd3"
 
 # Create the shipment
 url = "https://api.goshippo.com/shipments/"
 headers = {
-    "Authorization": "ShippoToken shippo_test_6b8b4da6247bd3e14c92a515b1608c982d78a52f",
+    "Authorization": "ShippoToken shippo_test_625ae65fb7e9910e6ca5c1f82a75acfaae2a0dd3",
     "Content-Type": "application/json"
 }
 

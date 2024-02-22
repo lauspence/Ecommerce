@@ -137,6 +137,21 @@ h1,h2,h3,h4,h5,h6{
     height:50px;
 }
 
+#purchaseLabelButton {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: rgb(72, 193, 241); /* Match the background color */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#purchaseLabelButton:hover {
+    background-color: rgb(72, 173, 221); /* Darken the background color on hover */
+}
+
 /* .row{
     margin: 0%;
     top: 0%;

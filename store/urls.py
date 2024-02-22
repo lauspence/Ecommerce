@@ -12,7 +12,8 @@ urlpatterns = [
 	path('process_order/', views.processOrder, name="process_order"),
 	path('login.html', views.loginview, name='login'),
 	path('AboutUs.html', views.AboutUs, name='AboutUs'),
-    path('calculate_shipping/', calculate_shipping, name='calculate_shipping'),
+    # path('calculate_shipping/', calculate_shipping, name='calculate_shipping'),
+    path('purchase_shipping_label/', views.purchase_shipping_label, name='purchase_shipping_label'),
     # path('helcim', include('helcim.urls')),
 
     

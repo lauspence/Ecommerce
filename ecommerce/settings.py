@@ -13,10 +13,16 @@ import os
 from pathlib import Path
 
 
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+# Add 'secure.helcim.app' to the frame-ancestors directive in your CSP policy
+# CSP_MIDDLEWARE_SECONDS = 60 * 60 * 24  # Adjust the max-age value as needed
+# CSP_FRAME_ANCESTORS = ["'self'", "https://*.helcim.app", "https://*.myhelcim.com", "https://secure.helcim.app"]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -27,7 +33,7 @@ SECRET_KEY = 'django-insecure-=r3j3i0c#e9%*)699!!@*ebh5h^a4-iqj3c1*j%pbgou6x9*k&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cullinanapparel.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -41,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'store.apps.StoreConfig',
     'shippo',
-    # 'helcim',
+    'helcim'
     
 ]
 
@@ -106,21 +112,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 # Helcim Settings
-# HELCIM_API_URL = 'https://secure.myhelcim.com/api/'
-# HELCIM_ACCOUNT_ID = 'your_helcim_account_id'
-# HELCIM_API_TOKEN = 'K2K39trxSR9gkcHRtZM9SG5sk'
-# HELCIM_TERMINAL_ID = 'your_helcim_terminal_id'
+HELCIM_API_URL = 'https://api.helcim.com/v2'
+HELCIM_ACCOUNT_ID = 'your_helcim_account_id'
+HELCIM_API_TOKEN = 'K2K39trxSR9gkcHRtZM9SG5sk'
+HELCIM_TERMINAL_ID = 'your_helcim_terminal_id'
 
-# DJANGO_HELCIM_CONFIG = {
-#     'purchase': {
-#         'url': 'https://myhelcim.com/js/version2.js',
-#         'token': 'K2K39trxSR9gkcHRtZM9SG5sk',
-#     },
-#     'preauthorization': {
-#         'url':  'https://myhelcim.com/js/version2.js',
-#         'token': 'K2K39trxSR9gkcHRtZM9SG5sk',
-#     }
-# }
+DJANGO_HELCIM_CONFIG = {
+    'purchase': {
+        'url': 'https://myhelcim.com/js/version2.js',
+        'token': 'K2K39trxSR9gkcHRtZM9SG5sk',
+    },
+    'preauthorization': {
+        'url':  'https://myhelcim.com/js/version2.js',
+        'token': 'K2K39trxSR9gkcHRtZM9SG5sk',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -136,6 +142,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = 'static/'
 

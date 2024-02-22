@@ -11,9 +11,47 @@ from django.http import JsonResponse
 import shippo
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormView
+from helcim.exceptions import ProcessingError, PaymentError
+from helcim.gateway import Purchase
+from .forms import PaymentForm
+
+from helcim.gateway import HelcimJSResponse
+
+from .forms import PaymentForm
+from helcim.mixins import HelcimJSMixin
+
+class HelcimJSPaymentView(HelcimJSMixin, FormView):
+    form_class = PaymentForm
+    template_name = 'store/checkout.html'
+class PaymentView(FormView):
+    # FormView used to allow a Django form to be used to help
+    # with templating; it is not actually required for handling
+    # the Helcim.js response
+    form_class = PaymentForm
+    template_name = 'store/checkout.html'
+
+    def post(self, request, *args, **kwargs):
+        response = HelcimJSResponse(
+            response=request.POST,
+            save_token=True,
+            django_user=request.user,
+        )
+        # If response is valid, can save details and redirect
+        if response.is_valid():
+            transaction, token = response.record_purchase()
+
+            # form_valid() used to trigger a success URL redirect
+            return self.form_valid()
+
+        # Invalid form submission/payment - render payment details
+        # again. Could manage various error responses here for a
+        # better user experience
+        form = self.get_form()
+
+        return self.form_invalid(form)
 
 
-shippo.config.api_key = "shippo_test_6b8b4da6247bd3e14c92a515b1608c982d78a52f"
+shippo.config.api_key = "shippo_test_625ae65fb7e9910e6ca5c1f82a7cd5acfaae2a0dd3"
 #Shippo-API
 def calculate_shipping(request):
     # Get address and parcel details from the request or use dummy data
@@ -234,6 +272,73 @@ def update_cart(request, product_id):
     # Return a success response
     return JsonResponse({'success': True})
 
+from django.http import JsonResponse
+
+def purchase_shipping_label(request):
+    if request.method == 'POST':
+        try:
+            # Initialize Shippo with your API token (replace with your actual Shippo token)
+            shippo.api_key = "shippo_live_3abb9901a8c0de8492189a3fb601134178170626"
+
+            # Define shipment data
+            shipment = {
+                "address_to": {
+                    "name": "Mr Hippo",
+                    "street1": "965 Mission St #572",
+                    "city": "San Francisco",
+                    "state": "CA",
+                    "zip": "94103",
+                    "country": "US",
+                    "phone": "4151234567",
+                    "email": "mrhippo@goshippo.com"
+                },
+                "address_from": {
+                    "name": "Mrs Hippo",
+                    "street1": "1092 Indian Summer Ct",
+                    "city": "San Jose",
+                    "state": "CA",
+                    "zip": "95122",
+                    "country": "US",
+                    "phone": "4159876543",
+                    "email": "mrshippo@goshippo.com"
+                },
+                "parcels": [{
+                    "length": "10",
+                    "width": "15",
+                    "height": "10",
+                    "distance_unit": "in",
+                    "weight": "1",
+                    "mass_unit": "lb"
+                }]
+            }
+           
+            # Create the shipment
+            shipment_data = shippo.Shipment.create(**shipment)
+
+            # Get rates for the shipment
+            rates = shipment_data.rates
+
+            # Set the max transit time
+            MAX_TRANSIT_TIME_DAYS = 3
+
+            # Filter rates by max. transit time, then select cheapest
+            eligible_rates = [rate for rate in rates if rate.estimated_days <= MAX_TRANSIT_TIME_DAYS]
+            if eligible_rates:
+                rate = min(eligible_rates, key=lambda x: float(x.amount))
+                transaction = shippo.Transaction.create(rate=rate.object_id, asynchronous=False)
+
+                # Check transaction status
+                if transaction.status == "SUCCESS":
+                    return JsonResponse({'status': 'success', 'tracking_number': transaction.tracking_number, 'label_url': transaction.label_url})
+                else:
+                    error_messages = [message.text for message in transaction.messages]
+                    return JsonResponse({'status': 'error', 'message': error_messages}, status=400)
+            else:
+                return JsonResponse({'status': 'error', 'message': 'No eligible rates found'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 
 def AboutUs(request):
           return render(request, 'store/AboutUs.html') 
